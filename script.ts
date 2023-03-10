@@ -2,8 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
 import { ApolloServer } from 'apollo-server'
-import {  allUsers, User } from '../Resolvers/User'
-import { createUser } from '../Resolvers/Auth';
+import {  allUsers, User } from './Resolvers/User'
+import { createUser } from './Resolvers/Auth';
 
 import jwt from 'jsonwebtoken'
 
