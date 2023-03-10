@@ -3,12 +3,12 @@ import { PrismaClient } from '@prisma/client';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
 import { ApolloServer } from 'apollo-server-express'
-import {  allUsers, User } from '../Resolvers/User'
+import {  allUsers, User, updateUser, deleteUser } from '../Resolvers/User'
 import { createUser } from '../Resolvers/Auth';
+import { allRoutes, route, createRoute, updateRoute, deleteRoute } from '../Resolvers/Routes';
 
 import jwt from 'jsonwebtoken'
 
-// const prisma = new PrismaClient();
 
 const verifyUser = (token: any) => {
     try {
@@ -37,9 +37,14 @@ const typeDefs = `
   type User {
 
     email: String!
+    firstName: String
 
-    name: String
+  }
 
+  type Route {
+    id: Int
+    title: String
+    description: String
   }
 
   type AuthPayload {
@@ -51,7 +56,10 @@ const typeDefs = `
   type Query {
 
     allUsers: [User!]!,
-    User: [User!]!,
+    User(email: String!): [User!]!,
+
+    allRoutes: [Route!]!,
+    route(id: Int!): [ Route],
 
 
   }
@@ -64,7 +72,22 @@ const typeDefs = `
       firstName: String!, 
       lastName: String!
       ): AuthPayload,
+      
 
+    updateUser(email: String!, password: String, firstName: String, lastName: String): User,
+    deleteUser( email: String! ): User
+
+    createRoute(
+      title: String!
+      description: String!
+      ): Route
+    
+    deleteRoute( id: Int!): Route
+    updateRoute(
+    id: Int!,
+    title: String, 
+    description: String, 
+    ): Route
 
   }
 
@@ -76,11 +99,18 @@ const resolvers = {
   Query: {
 
     allUsers,
-    User
+    User,
+    allRoutes,
+    route
 
   },
   Mutation: {
-    createUser
+    createUser,
+    updateUser,
+    deleteUser,
+    createRoute,
+    updateRoute,
+    deleteRoute
   }
 
 };
@@ -106,6 +136,12 @@ const server = new ApolloServer({
 
     if (!user) {
       currentUser = null;
+    }
+
+    return {
+      ...req,
+      // user: user,
+      
     }
 }
 });
