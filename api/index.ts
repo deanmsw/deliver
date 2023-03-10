@@ -1,13 +1,14 @@
+import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
-import { ApolloServer } from 'apollo-server'
-import {  allUsers, User } from './Resolvers/User'
-import { createUser } from './Resolvers/Auth';
+import { ApolloServer } from 'apollo-server-express'
+import {  allUsers, User } from '../Resolvers/User'
+import { createUser } from '../Resolvers/Auth';
 
 import jwt from 'jsonwebtoken'
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 const verifyUser = (token: any) => {
     try {
@@ -84,7 +85,7 @@ const resolvers = {
 
 };
 
-
+async function serverStart () {
 const server = new ApolloServer({ 
   resolvers, 
   typeDefs,
@@ -108,4 +109,14 @@ const server = new ApolloServer({
 }
 });
 
-server.listen({ port: 4000 });
+// server.listen({ port: 4000 });
+await server.start()
+const app = express();
+server.applyMiddleware({ app });
+
+app.listen({ port: 4000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+);
+}
+
+serverStart()
