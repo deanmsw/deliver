@@ -1,20 +1,16 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "password" TEXT,
+    "avatar" TEXT,
+    "username" TEXT,
+    "tel" INTEGER,
 
-  - You are about to drop the column `name` on the `User` table. All the data in the column will be lost.
-  - Added the required column `firstName` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `lastName` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `password` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "name",
-ADD COLUMN     "avatar" TEXT,
-ADD COLUMN     "firstName" TEXT NOT NULL,
-ADD COLUMN     "lastName" TEXT NOT NULL,
-ADD COLUMN     "password" TEXT NOT NULL,
-ADD COLUMN     "tel" INTEGER,
-ADD COLUMN     "username" TEXT;
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Profile" (
@@ -43,6 +39,9 @@ CREATE TABLE "Route" (
 
     CONSTRAINT "Route_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Profile_userId_key" ON "Profile"("userId");

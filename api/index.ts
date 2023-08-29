@@ -35,7 +35,6 @@ const verifyUser = (token: any) => {
 const typeDefs = `
 
   type User {
-
     email: String!
     firstName: String
 
@@ -90,7 +89,6 @@ const typeDefs = `
     ): Route
 
   }
-
 `;
 
 
