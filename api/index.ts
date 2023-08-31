@@ -37,17 +37,17 @@ const typeDefs = `
   type User {
     email: String!
     firstName: String
-  }
-  type Route {
-    id: Int
-    title: String
-    description: String
     lastName:    String
     password: String
     avatar: String
     username: String
     tel: Int
     routes:  [Route]
+  }
+  type Route {
+    id: Int
+    title: String
+    description: String
   }
 
   type AuthPayload {
