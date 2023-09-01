@@ -21,6 +21,7 @@ model User {
   username String?
   tel Int?
   routes  Route[]
+  routeId Int?
   profile Profile?
 }
 
@@ -40,9 +41,6 @@ model Route {
   price Float?
   longitude Float?
   latitude Float?
-  images String?
-  condition String?
-  listed Boolean  @default(false)
   postedBy    User?   @relation(fields: [postedById], references: [id])
   postedById  Int?
   slug String?

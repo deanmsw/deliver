@@ -35,6 +35,7 @@ const verifyUser = (token: any) => {
 const typeDefs = `
 
   type User {
+    id: Int
     email: String!
     firstName: String
     lastName:    String
@@ -42,12 +43,15 @@ const typeDefs = `
     avatar: String
     username: String
     tel: Int
-    routes:  [Route]
+    routes: [Route]
   }
+
   type Route {
     id: Int
     title: String
     description: String
+    postedBy:   User
+    postedById: Int
   }
 
   type AuthPayload {
@@ -59,10 +63,10 @@ const typeDefs = `
   type Query {
 
     allUsers: [User!]!,
-    User(email: String!): [User!]!,
+    User(email: String!): User!,
 
     allRoutes: [Route!]!,
-    route(id: Int!): [ Route],
+    route(id: Int!): Route,
 
 
   }
@@ -83,13 +87,16 @@ const typeDefs = `
     createRoute(
       title: String!
       description: String!
+
+      postedById: Int
       ): Route
     
     deleteRoute( id: Int!): Route
+
     updateRoute(
     id: Int!,
     title: String, 
-    description: String, 
+    description: String,
     ): Route
 
   }

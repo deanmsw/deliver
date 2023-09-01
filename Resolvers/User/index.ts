@@ -5,12 +5,25 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient();
 
 export async function allUsers (parent: any, args: any, context: any) {
-      return await prisma.user.findMany();
+      return await prisma.user.findMany({include: {
+            routes: true,
+          }});
     }
 export async function User (parent: any, args: any, context: any) {
-      return await  prisma.user.findMany({where: {email: args.email}});   
+      return await  prisma.user.findUnique(
+        {
+          where: 
+          {
+            email: args.email
+          },
+          include: {
+            routes: true,
+          },
+        }
+      );   
     }
-    
+  
+
 export async function updateUser (parent: any, args: any, context: any) {
   const password = await bcrypt.hash(args.password, 10)
 
