@@ -5,9 +5,12 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient();
 
 export async function allUsers (parent: any, args: any, context: any) {
-      return await prisma.user.findMany({include: {
-            routes: true,
-          }});
+      return await prisma.user.findMany(
+        // {include: {
+        //     routes: true,
+        //   }
+        // }
+        );
     }
 export async function User (parent: any, args: any, context: any) {
       return await  prisma.user.findUnique(
@@ -16,9 +19,9 @@ export async function User (parent: any, args: any, context: any) {
           {
             email: args.email
           },
-          include: {
-            routes: true,
-          },
+          // include: {
+          //   routes: true,
+          // },
         }
       );   
     }

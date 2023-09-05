@@ -10,19 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  firstName    String
-  lastName    String
-  password String?
-  avatar String?
-  username String?
-  tel Int?
-  routes  Route[]
-  routeId Int?
-  profile Profile?
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  firstName String
+  lastName  String
+  password  String?
+  avatar    String?
+  username  String?
+  tel       Int?
+  // routes  Route[]
+  // routeId Int?
+  profile   Profile?
+  role      Role      @default(CUSTOMER)
+  // Other user fields like name, phone, etc.
+  // ...
+  // Relationships
+  driver    Driver?
+  customer  Customer?
+}
+
+enum Role {
+  CUSTOMER
+  DRIVER
 }
 
 model Profile {
@@ -32,16 +42,52 @@ model Profile {
   userId Int     @unique
 }
 
+model Driver {
+  id     Int     @id @default(autoincrement())
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id])
+  // Other driver-related fields like driver's license, vehicle info, etc.
+  // ...
+  // Relationships
+  routes Route[]
+}
+
+model Customer {
+  id       Int       @id @default(autoincrement())
+  userId   Int       @unique
+  user     User      @relation(fields: [userId], references: [id])
+  // Other customer-related fields like payment info, preferences, etc.
+  // ...
+  // Relationships
+  journeys Journey[]
+}
+
 model Route {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title String @db.VarChar(255) 
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String    @db.VarChar(255)
   description String?
-  price Float?
-  longitude Float?
-  latitude Float?
-  postedBy    User?   @relation(fields: [postedById], references: [id])
-  postedById  Int?
-  slug String?
+  price       Float?
+  longitude   Float?
+  latitude    Float?
+  driver      Driver?   @relation(fields: [driverId], references: [id])
+  driverId    Int?
+  slug        String?
+  // customer Journey[]  @relation(fields: [customerId], references: [id])
+  customerId  Int
+  // Other route-related fields like start time, end time, etc.
+  // ...
+  // Relationships
+  journeys    Journey[] // A route can have many journeys
+}
+
+model Journey {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+  routeId    Int
+  route      Route    @relation(fields: [routeId], references: [id])
+  // Other journey-related fields like pickup location, drop-off location, fare, etc.
+  // ...
 }

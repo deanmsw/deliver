@@ -4,15 +4,19 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function allRoutes (parent: any, args: any, context: any) {
-  return await prisma.route.findMany({ include: {
-            postedBy: true,
-          }});
+  return await prisma.route.findMany(
+    // { include: {
+    //         postedBy: true,
+    //       }}
+          );
 }
 
 export async function route (parent: any, args: any, context: any) {
-  return await prisma.route.findUnique({where: {id: args.id},         include: {
-            postedBy: true,
-          },})
+  return await prisma.route.findUnique({where: {id: args.id},         
+    // include: {
+    //         postedBy: true,
+    //       },
+        })
 }
 
 
