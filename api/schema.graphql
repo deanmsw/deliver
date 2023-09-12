@@ -1,0 +1,110 @@
+type User {
+    id: Int
+    email: String!
+    firstName: String
+    lastName:    String
+    password: String
+    avatar: String
+    username: String
+    tel: Int
+    routes: [Route]
+    role:   Role
+    driver:    Driver
+    customer:  Customer
+  }
+  enum Role {
+    CUSTOMER
+    DRIVER
+  }
+
+  type Route {
+    id: Int
+    title: String
+    description: String
+    # postedBy:   User
+    # postedById: Int
+    driver: Driver
+    driverId:    Int
+    slug:        String
+    customerId: Int
+    journeys: Journey
+  }
+
+  type Journey {
+  id: Int
+  customerId: Int
+  customer:  Customer
+  routeId:    Int
+  route:      Route
+}
+
+type Customer {
+  id:       Int
+  userId:   Int
+  user:     User
+  journeys: [Journey]
+}
+type Driver {
+  id:       Int
+  userId:   Int
+  user:     User
+  routes: [Route]
+}
+
+
+  type AuthPayload {
+  token: String
+  user: User
+}
+
+
+  type Query {
+
+    allUsers: [User!]!,
+    User(email: String!): User!,
+
+    allRoutes: [Route!]!,
+    route(id: Int!): Route,
+
+
+  }
+
+  input DriverObj {
+    id:       Int
+    userId:   Int
+  }
+
+  type Mutation {
+
+    createUser(
+      email: String!
+      password: String!, 
+      firstName: String!, 
+      lastName: String!
+      ): AuthPayload,
+      
+
+    updateUser(email: String!, password: String, firstName: String, lastName: String): User,
+    deleteUser( email: String! ): User
+
+    createRoute(
+      title: String!
+      description: String!
+      driver: DriverObj
+      driverId:    Int
+      slug:        String
+      # customerId: Int
+      # journeys: [Int]
+
+  
+      ): Route
+    
+    deleteRoute( id: Int!): Route
+
+    updateRoute(
+    id: Int!,
+    title: String, 
+    description: String,
+    ): Route
+
+  }

@@ -8,6 +8,9 @@ import { createUser } from '../Resolvers/Auth';
 import { allRoutes, route, createRoute, updateRoute, deleteRoute } from '../Resolvers/Routes';
 
 import jwt from 'jsonwebtoken'
+import fs from 'fs';
+import path from 'path';
+
 
 
 const verifyUser = (token: any) => {
@@ -30,77 +33,6 @@ const verifyUser = (token: any) => {
         return { loggedIn: false };
     }
 };
-
-
-const typeDefs = `
-
-  type User {
-    id: Int
-    email: String!
-    firstName: String
-    lastName:    String
-    password: String
-    avatar: String
-    username: String
-    tel: Int
-    routes: [Route]
-  }
-
-  type Route {
-    id: Int
-    title: String
-    description: String
-    postedBy:   User
-    postedById: Int
-  }
-
-  type AuthPayload {
-  token: String
-  user: User
-}
-
-
-  type Query {
-
-    allUsers: [User!]!,
-    User(email: String!): User!,
-
-    allRoutes: [Route!]!,
-    route(id: Int!): Route,
-
-
-  }
-
-  type Mutation {
-
-    createUser(
-      email: String!
-      password: String!, 
-      firstName: String!, 
-      lastName: String!
-      ): AuthPayload,
-      
-
-    updateUser(email: String!, password: String, firstName: String, lastName: String): User,
-    deleteUser( email: String! ): User
-
-    createRoute(
-      title: String!
-      description: String!
-
-      postedById: Int
-      ): Route
-    
-    deleteRoute( id: Int!): Route
-
-    updateRoute(
-    id: Int!,
-    title: String, 
-    description: String,
-    ): Route
-
-  }
-`;
 
 
 const resolvers = {
@@ -127,7 +59,10 @@ const resolvers = {
 async function serverStart () {
 const server = new ApolloServer({ 
   resolvers, 
-  typeDefs,
+    typeDefs: fs.readFileSync(
+    path.join(__dirname, 'schema.graphql'),
+    'utf8'
+  ),
   introspection: true,
   plugins: [
     ApolloServerPluginLandingPageGraphQLPlayground(),

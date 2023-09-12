@@ -5,24 +5,36 @@ const prisma = new PrismaClient();
 
 export async function allRoutes (parent: any, args: any, context: any) {
   return await prisma.route.findMany(
-    // { include: {
-    //         postedBy: true,
-    //       }}
+    { include: {
+            driver: true,
+          }}
           );
 }
 
 export async function route (parent: any, args: any, context: any) {
   return await prisma.route.findUnique({where: {id: args.id},         
-    // include: {
-    //         postedBy: true,
-    //       },
+    include: {
+            driver: true,
+          },
         })
 }
 
 
 export async function createRoute(parent: any, args: any, context: any) {
 
-  return await prisma.route.create({ data: { ...args } })
+  return await prisma.route.create(
+    { 
+      data: { ...args,
+         driver: {
+          connect:  {
+           userId: args.driver.userId
+          }
+         }
+    },
+      include: {
+        driver: true, 
+      }}
+  )
 }
 
 export async function updateRoute (parent: any, args: any, context: any) {

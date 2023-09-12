@@ -75,7 +75,7 @@ model Route {
   driverId    Int?
   slug        String?
   // customer Journey[]  @relation(fields: [customerId], references: [id])
-  customerId  Int
+  customerId  Int?
   // Other route-related fields like start time, end time, etc.
   // ...
   // Relationships
