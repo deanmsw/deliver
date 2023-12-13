@@ -62,6 +62,14 @@ model Customer {
   journeys Journey[]
 }
 
+model Location {
+  id Int     @id @default(autoincrement())
+  latitude Float
+  longitude Float
+  routesStart Route[] @relation("StartLocation")
+  routesEnd Route[]   @relation("EndLocation")
+}
+
 model Route {
   id          Int       @id @default(autoincrement())
   createdAt   DateTime  @default(now())
@@ -69,8 +77,12 @@ model Route {
   title       String    @db.VarChar(255)
   description String?
   price       Float?
-  longitude   Float?
-  latitude    Float?
+  // longitude   Float?
+  // latitude    Float?
+  startLocation Location  @relation("StartLocation", fields: [startLocationId], references: [id])
+  endLocation Location    @relation("EndLocation", fields: [endLocationId], references: [id])
+  startLocationId Int
+  endLocationId Int
   driver      Driver?   @relation(fields: [driverId], references: [id])
   driverId    Int?
   slug        String?

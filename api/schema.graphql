@@ -1,110 +1,121 @@
 type User {
-    id: Int
-    email: String!
-    firstName: String
-    lastName:    String
-    password: String
-    avatar: String
-    username: String
-    tel: Int
-    routes: [Route]
-    role:   Role
-    driver:    Driver
-    customer:  Customer
-  }
-  enum Role {
-    CUSTOMER
-    DRIVER
-  }
+  id: Int
+  email: String!
+  firstName: String
+  lastName: String
+  password: String
+  avatar: String
+  username: String
+  tel: Int
+  routes: [Route]
+  role: Role
+  driver: Driver
+  customer: Customer
+}
+enum Role {
+  CUSTOMER
+  DRIVER
+}
 
-  type Route {
-    id: Int
-    title: String
-    description: String
-    # postedBy:   User
-    # postedById: Int
-    driver: Driver
-    driverId:    Int
-    slug:        String
-    customerId: Int
-    journeys: Journey
-  }
+type Location {
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+}
 
-  type Journey {
+input LocationInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+type Route {
+  id: Int
+  title: String
+  description: String
+  # postedBy:   User
+  # postedById: Int
+  startLocation: Location
+  endLocation: Location
+  distance: Float
+  duration: Int
+  driver: Driver
+  driverId: Int
+  slug: String
+  customerId: Int
+  journeys: Journey
+}
+
+type Journey {
   id: Int
   customerId: Int
-  customer:  Customer
-  routeId:    Int
-  route:      Route
+  customer: Customer
+  routeId: Int
+  route: Route
+  startLocation: Location
+  endLocation: Location
+  distance: Float!
 }
 
 type Customer {
-  id:       Int
-  userId:   Int
-  user:     User
+  id: Int
+  userId: Int
+  user: User
   journeys: [Journey]
 }
 type Driver {
-  id:       Int
-  userId:   Int
-  user:     User
+  id: Int
+  userId: Int
+  user: User
   routes: [Route]
 }
 
-
-  type AuthPayload {
+type AuthPayload {
   token: String
   user: User
 }
 
+type Query {
+  allUsers: [User!]!
+  User(email: String!): User!
 
-  type Query {
+  allRoutes: [Route!]!
+  route(id: Int!): Route
+}
 
-    allUsers: [User!]!,
-    User(email: String!): User!,
+input DriverObj {
+  id: Int
+  userId: Int
+}
 
-    allRoutes: [Route!]!,
-    route(id: Int!): Route,
+type Mutation {
+  createUser(
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+  ): AuthPayload
 
+  updateUser(
+    email: String!
+    password: String
+    firstName: String
+    lastName: String
+  ): User
+  deleteUser(email: String!): User
 
-  }
+  createRoute(
+    title: String!
+    description: String!
+    driver: DriverObj
+    driverId: Int
+    slug: String # customerId: Int # journeys: [Int]
+    startLocation: LocationInput
+    endLocation: LocationInput
+    distance: Float
+    duration: Int
+  ): Route
 
-  input DriverObj {
-    id:       Int
-    userId:   Int
-  }
+  deleteRoute(id: Int!): Route
 
-  type Mutation {
-
-    createUser(
-      email: String!
-      password: String!, 
-      firstName: String!, 
-      lastName: String!
-      ): AuthPayload,
-      
-
-    updateUser(email: String!, password: String, firstName: String, lastName: String): User,
-    deleteUser( email: String! ): User
-
-    createRoute(
-      title: String!
-      description: String!
-      driver: DriverObj
-      driverId:    Int
-      slug:        String
-      # customerId: Int
-      # journeys: [Int]
-
-  
-      ): Route
-    
-    deleteRoute( id: Int!): Route
-
-    updateRoute(
-    id: Int!,
-    title: String, 
-    description: String,
-    ): Route
-
-  }
+  updateRoute(id: Int!, title: String, description: String): Route
+}
