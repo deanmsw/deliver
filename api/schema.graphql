@@ -10,6 +10,7 @@ type User {
   routes: [Route]
   role: Role
   driver: Driver
+  driverId: Int
   customer: Customer
   apiToken: String
 }
@@ -108,19 +109,18 @@ type Mutation {
     email: String!
     password: String
     firstName: String
-    lastName: String
-  ): # driver: DriverObj
-  User
+    lastName: String # driver: DriverObj
+  ): User
   deleteUser(email: String!): User
 
   createRoute(
     title: String!
     description: String!
     driver: DriverObj
-    driverId: Int
+    driverId: Int!
     slug: String # customerId: Int # journeys: [Int]
-    startLocation: LocationInput
-    endLocation: LocationInput
+    startLocation: LocationInput!
+    endLocation: LocationInput!
     distance: Float
     duration: Int
   ): Route
