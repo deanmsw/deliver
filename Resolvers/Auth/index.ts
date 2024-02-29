@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { v4 as uuid } from 'uuid';
+// import { v4 as uuid } from 'uuid';
 
 import { PrismaClient } from '@prisma/client';
 import { ApolloError } from 'apollo-server-core';
@@ -8,55 +8,76 @@ import { ApolloError } from 'apollo-server-core';
 const prisma = new PrismaClient();
 
 export async function createUser(parent: any, args: any, context: any) {
-  const password = await bcrypt.hash(args.password, 10);
+  try {
+    // Validate input data
+    if (!args.password || args.password.length < 8) {
+      throw new ApolloError(
+        'Password must be at least 8 characters long.',
+        'INVALID_PASSWORD'
+      );
+    }
 
-  const user = await prisma.user.create({ data: { ...args, password } });
+    // Hash the password
+    const password = await bcrypt.hash(args.password, 10);
 
-  const token = jwt.sign({ userId: user.id }, 'hello world');
+    // Create the user in the database
+    const user = await prisma.user.create({ data: { ...args, password } });
 
-  return {
-    token,
-    user,
-  };
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET || 'defaultSecret'
+    );
+
+    return {
+      token,
+      user,
+    };
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error('Error creating user:', error);
+
+    // Rethrow the error to be handled by Apollo Server
+    throw new ApolloError('Failed to create user.', 'INTERNAL_SERVER_ERROR');
+  }
 }
 
 export const signIn = async (parent: any, args: any, context: any) => {
   console.log(args, 'hey');
 
+  // Find the user by email
   const user = await prisma.user.findUnique({
     where: { email: args?.loginInput?.email },
   });
 
-  if (!user) return new ApolloError('NOT_AUTHORIZED_MSG, NOT_AUTHORIZED');
+  // If user doesn't exist, throw an authentication error
+  if (!user) {
+    throw new ApolloError('Invalid email or password', 'NOT_AUTHORIZED');
+  }
 
+  // Compare the provided password with the hashed password stored in the database
   const isValidPwd = await bcrypt.compare(
     args?.loginInput?.password,
     user.password || ''
   );
 
-  // Check user exists and that the provided password matches the hashed version stored in the DB
-  if (!isValidPwd) return new ApolloError('NOT_AUTHORIZED_MSG, NOT_AUTHORIZED');
+  // If password is invalid, throw an authentication error
+  if (!isValidPwd) {
+    throw new ApolloError('Invalid email or password', 'NOT_AUTHORIZED');
+  }
 
-  // if (!user.active) return new ApolloError('User Inactive');
-
-  // Generate a token to be stored in the DB and used to verfiy that this is the latest version of the token
-  const apiToken = uuid();
-  // Save hashed version of the API token in the DB
-  // await hashAndStoreApiToken(apiToken, user.id);
-  // Total duration the token can be refreshed
-  // const canBeRefreshedBefore = dayjs().add(2, 'w').unix();
-
+  // Generate a JWT token for authentication
   const jwtToken = jwt.sign(
     {
-      api_token: apiToken,
-      sub: Number(user.id),
+      userId: user.id,
     },
-    'process.env.JWT_SECRET',
+    process.env.JWT_SECRET || 'defaultSecret', // Use environment variable for JWT secret
     {
-      expiresIn: '1h',
+      expiresIn: '1h', // Token expires in 1 hour
     }
   );
 
+  // Return the token along with its type
   return { token: jwtToken, type: 'bearer' };
 };
 
