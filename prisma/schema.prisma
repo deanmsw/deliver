@@ -28,6 +28,8 @@ model User {
   // Relationships
   driver    Driver?
   customer  Customer?
+  apiToken     String? @unique @map("api_token") @db.VarChar(80)
+
 }
 
 enum Role {

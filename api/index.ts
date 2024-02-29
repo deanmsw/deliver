@@ -4,7 +4,7 @@ import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-co
 
 import { ApolloServer } from 'apollo-server-express';
 import { allUsers, User, updateUser, deleteUser } from '../Resolvers/User';
-import { createUser } from '../Resolvers/Auth';
+import { createUser, signIn } from '../Resolvers/Auth';
 import {
   allRoutes,
   route,
@@ -52,6 +52,7 @@ const resolvers = {
     createRoute,
     updateRoute,
     deleteRoute,
+    signIn,
   },
 };
 
@@ -60,7 +61,7 @@ async function serverStart() {
     resolvers,
     typeDefs: fs.readFileSync(path.join(__dirname, 'schema.graphql'), 'utf8'),
     introspection: true,
-    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+    // plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 
     context: async ({ req }) => {
       let currentUser = null;

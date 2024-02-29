@@ -11,6 +11,7 @@ type User {
   role: Role
   driver: Driver
   customer: Customer
+  apiToken: String
 }
 enum Role {
   CUSTOMER
@@ -73,6 +74,9 @@ type AuthPayload {
   token: String
   user: User
 }
+type AuthToken {
+  token: String!
+}
 
 type Query {
   allUsers: [User!]!
@@ -85,6 +89,11 @@ type Query {
 input DriverObj {
   id: Int
   userId: Int
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
 
 type Mutation {
@@ -115,6 +124,8 @@ type Mutation {
     duration: Int
   ): Route
 
+  signIn(loginInput: LoginInput!): AuthPayload
+  signOut: AuthToken
   deleteRoute(id: Int!): Route
 
   updateRoute(id: Int!, title: String, description: String): Route
