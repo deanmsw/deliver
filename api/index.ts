@@ -61,7 +61,7 @@ async function serverStart() {
     resolvers,
     typeDefs: fs.readFileSync(path.join(__dirname, 'schema.graphql'), 'utf8'),
     introspection: true,
-    // plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 
     context: async ({ req }) => {
       let currentUser = null;
